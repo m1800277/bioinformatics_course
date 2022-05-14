@@ -1,0 +1,150 @@
+---
+title: "Advanced Bioinformatics 2022 assessment"
+author: "m1800277"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Task 3.1
+
+Using the sum() function and : operator, write an expression in the code snippet to evaluate the sum of all integers between 5 and 55
+
+```{r}
+sum(5:55) #sum() is used to add up all integers within the brackets, a colon means all integers between the two values either side; in this case, all integers between 5 and 55
+```
+
+## Task 3.2
+
+Write a function called sumfun with one input parameter, called n, that calculates the sum of all integers between 5 and n. Use the function to do the calculation for n = 10, n = 20, and n = 100 and present the results.
+
+```{r}
+sumfun <- function(n) {sum(5:n)} #set sumfun(n) as a new function of n, with the function sum(5:n), following from the logic of the previous task
+```
+
+### Answers to task 3.2
+
+```{r}
+sumfun(10)
+```
+
+```{r}
+sumfun(20)
+```
+
+```{r}
+sumfun(100)
+```
+
+## Task 3.3
+
+The famous Fibonacci series is calculated as the sum of the two preceding members of the sequence, where the first two steps in the sequence are 1, 1. Write an R script using a for loop to calculate and print out the first 12 entries of the Fibonacci series.
+
+```{r}
+seq <- function(n) { #set sequence, seq(n), as a new function of n
+  seq <-numeric(n) #set seq(n) as a numeric value
+  seq[1] <- 1 #[1] is the first element of the function seq(n), first value in sequence is 1
+  seq[2] <- 1 #[2] is the second element of the function seq(n), second value in sequence is 1
+  i = 3 #since first two values are known, and to avoid loop, start the sequence by calculating the third value
+  
+  while (i <= n) { #loop will continue for n values of i, where i is the position in the sequence
+  seq[i]=seq[i - 1] + seq[i - 2] #Fibonacci sequence is sum of two previous numbers
+  i<- i + 1 #move to the next position in the sequence
+ }
+ return(seq) #repeat the loop
+}
+
+seq(12) #run loop for 12 values
+```
+
+## Task 3.4
+
+With the mtcars dataset bundled with R, use ggplot to generate a box of miles per gallon (in the variable mpg) as a function of the number of gears (in the variable gear). Use the fill aesthetic to colour bars by number of gears.
+
+```{r}
+library(ggplot2) #library() is used to load add-on packages, in ths case the mtcars database bundled with R
+ggplot(data = mtcars, aes(x= as.factor(gear), y= mpg)) + geom_boxplot(aes(fill= as.factor(gear) )) + ggtitle("Boxplot showing the relationship between the function of the \
+number of gears with the miles per gallon used")
+#creates a graph with the data from the loaded library.
+#The x axis is set to be the function of the number of gears using x=, and the y axis is set to be the variable mpg (miles per gallon) using y=.
+#The title of the graph is added using ggtitle()
+#The bars are colour coded by the number of gears via the geom_boxplot command with argument of fill=, where every different gear factor gets a different colour
+```
+
+## Task 3.5
+
+Using the cars dataset and the function lm, fit a linear relationship between speed and breaking distance in the variable distance. What are the fitted slope and intercept of the line, and their standard errors? What are the units used for the variables in the dataset?
+
+```{r}
+y <- cars $dist; x <- cars $speed; #distance mapped to y and speed mapped to x purely for sake of convenience when graphing in later tasks, as distance will be displayed on y axis and speed on x axis
+Relationship <- lm(formula = "y ~ x") #settng the lm function to be called Relationship
+summary(Relationship) #summary() is used to create a table showing the results of the model function specified, in this case the Relationship function mapped in the previous step
+```
+
+### Answers to task 3.5
+
+-   Fitted slope of the line: **3.9324**
+-   Standard error to fitted slope of the line: **0.4155**
+-   Intercept of the line: **-17.579**
+-   Standard error to intercept of the line: **6.7584**
+-   Unit of distance: **feet**
+-   Unit of speed: **miles per hour**
+
+## Task 3.6
+
+Use ggplot to plot the data points from Task 6 and the linear fit.
+
+```{r}
+library(ggplot2) #again, as in task 3.4, the library() command loads the ggplot2 (mtcars) database
+ggplot_temp <- ggplot(data = cars, aes(x= speed, y=dist)) + geom_point() + geom_smooth(method = "lm",formula = "y ~ x") #set a temporary function, ggplot_temp, to graph the linear function of the speed (x axis) and distance (y axis) for the mtcars dataset. geom_smooth() is used to display patterns in a plot of ponts, ie points generated from the mtcars dataset
+LinearFit <- ggplot_temp + ggtitle ("Linear fit of datapoints from Task 5, displaying the \
+corelation between speed and breaking distance")+ xlab("speed (miles per hour)")+ ylab("distance (feet)") #adding lables and a title to the graph, using xlab for the x axis, ylab for the y axis, and ggtitle() for the title
+LinearFit #run the LinearFit function
+```
+
+## Task 3.7
+
+Again using the cars dataset, now use linear regression (lm) to estimate the average reaction time for the driver to start breaking (in seconds). To simplify matters you may assume that once breaking commences, breaking distance is proportional to the square of the speed. Explain the steps in your analysis. Do you get reasonable results? Finally, use ggplot to plot the data points and the fitted relationship.
+
+### Answer for task 3.7
+
+As seen by the graph plotted in task 3.6, there is a possitive correlation between speed and distance. Assuming that the barking distance is proportional to the square of the speed, we can calculate a linear model for this.
+
+The reaction time is the time it takes for a driver to start braking. It is visible on a graph of distance over speed as being the y intercept.
+
+Firstly, before any calculations are made, it is important to convert the units of the variables in order to make calculations easier. We will do this by converting the distance from feet to miles. We will also set square the speed and map it to speed_squared, since it is assumed that the braking distance is proportional to speed squared.
+
+```{r}
+dist_miles <- cars$dist*0.000189 #converting distance from feet to miles
+speed_squared <- cars$speed^2 #squaring the speed
+lm(formula = dist_miles ~ speed_squared)
+```
+
+As seen in these metrics, the y intercept is 1.675e-03, or 0.001675 miles. We can convert this back to feet to see the average reaction distance:
+
+```{r}
+0.001675*5280
+```
+
+Therefore, the average reaction distance according to the data is 8.844 feet, which is really low, considering that the reaction distance at only 40mph is 59 feet.
+
+We can now use the formula speed=distance/time, rearanged as time=distance/speed, to calculate the average reaction time. Note that we still have to use the distance in miles, and not feet.
+
+We also have to square root the value of speed we calculated in the lm calculation, as this was squared.We can also convert this time to seconds.
+
+```{r}
+reaction_time=1.675e-03/2.438e-05^(1/2) #using time=dist/speed, where dist is the average stopping distance calculated earlier and the speed is the speed squared, as stated in the assumptions
+reaction_time*3600
+```
+
+As we can see, a reaction time of 1221.238s is highly unreasonable. In reality, the average reaction time is around 0.7s.
+
+Finally, we can plot this data onto a regression line.
+
+```{r}
+Regression <- lm(dist_miles ~ speed_squared) #setting Regression as a function of the datapoints of the relationship between the distance in miles and the speed squared
+plot(dist_miles ~ speed_squared); abline(Regression$coefficients, col = "blue") #plotting these datapoints onto a graph, showing a regression line
+```
