@@ -1,4 +1,4 @@
-#Advanced Bioinformatics Assignment
+# Advanced Bioinformatics Assignment
 
 NGS pipeline provided via a bash script
 
